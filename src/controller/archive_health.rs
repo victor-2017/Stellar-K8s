@@ -456,7 +456,9 @@ pub async fn check_archives_version_compatibility(
         let url = url.clone();
         let core_ver = core_version.to_string();
         async move {
-            match check_single_archive_version_compatibility(&client, &url, &core_ver, timeout).await {
+            match check_single_archive_version_compatibility(&client, &url, &core_ver, timeout)
+                .await
+            {
                 Ok(res) => res,
                 Err(e) => ArchiveVersionCompatibility {
                     url: url.clone(),
@@ -561,6 +563,7 @@ pub async fn check_archive_integrity(
 /// * `expected_signer_key` - Optional hex-encoded Ed25519 public key that must match the manifest
 /// * `timeout` - Per-URL HTTP timeout
 /// * `node_namespace` / `node_name` / `node_type` / `network` - Labels for Prometheus metrics
+#[allow(dead_code)] // Public entry point for ZK archive verification; not yet wired into the reconcile loop.
 pub async fn check_archive_zk_integrity(
     urls: &[String],
     expected_signer_key: Option<&str>,

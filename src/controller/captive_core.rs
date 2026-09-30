@@ -1,15 +1,3 @@
-// Copyright 2024 Stellar-K8s Contributors
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 //! Captive Core configuration builder for Soroban RPC
 //!
 //! This module provides utilities to generate TOML configuration for Captive Core
@@ -114,7 +102,9 @@ impl CaptiveCoreConfigBuilder {
     /// Create builder for Horizon captive core ingestion
     pub fn from_horizon_node_config(node: &StellarNode) -> Result<Self> {
         let horizon_config = node.spec.horizon_config.as_ref().ok_or_else(|| {
-            Error::ConfigError("HorizonConfig is required for captive core configuration".to_string())
+            Error::ConfigError(
+                "HorizonConfig is required for captive core configuration".to_string(),
+            )
         })?;
 
         if let Some(ref soroban_config) = node.spec.soroban_config {
@@ -137,7 +127,9 @@ impl CaptiveCoreConfigBuilder {
 
         Ok(Self {
             network_passphrase,
-            history_archive_urls: vec!["https://history.stellar.org/prd/core-live/core_live_001".to_string()],
+            history_archive_urls: vec![
+                "https://history.stellar.org/prd/core-live/core_live_001".to_string()
+            ],
             peer_port: DEFAULT_PEER_PORT,
             http_port: DEFAULT_HTTP_PORT,
             log_level: DEFAULT_LOG_LEVEL.to_string(),
@@ -349,10 +341,12 @@ mod tests {
                 },
                 soroban_config: Some(SorobanConfig {
                     stellar_core_url: "http://core:11626".to_string(),
+                    #[allow(deprecated)]
+                    captive_core_config: None,
                     captive_core_structured_config: Some(captive_config),
                     enable_preflight: true,
                     max_events_per_request: 10000,
-                    ..Default::default()
+                    cache: None,
                 }),
                 replicas: 2,
                 min_available: None,

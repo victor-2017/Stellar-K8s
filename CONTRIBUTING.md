@@ -239,6 +239,26 @@ script it exercises, then:
 is the canonical example: it shows the expected file layout, helper loading, and
 assertion style to follow when adding new suites.
 
+### Operational scripts index
+
+[`scripts/README.md`](scripts/README.md) indexes every operational script in the
+repository: what it does, the canonical invocation (and the `make` target that
+wraps it, where one exists), and the suite in `scripts/tests/` that covers it. It
+also separates the CI-only helpers in `scripts/ci/` from the scripts you are
+expected to run locally.
+
+To lint the GitHub issue templates locally — the same check CI runs when
+`.github/ISSUE_TEMPLATE/` changes:
+
+```bash
+python3 scripts/issue_template_lint.py
+```
+
+The command exits non-zero and lists every offending template when an Issue Form
+is missing required keys (`name`, `description`, `body`), uses an unsupported
+`body` field type, or has a malformed `config.yml`. It is also part of
+`make health`.
+
 ## 8. Coding Standards
 
 - Format Rust code with `make fmt`.
@@ -254,6 +274,12 @@ assertion style to follow when adding new suites.
 - Do not add `#[allow(dead_code)]` without a comment explaining why the code must stay.
 - Unused imports must be removed before merging.
 - Feature-gated code that is no longer used should be deleted, not suppressed.
+
+### Container environment variable conventions
+
+- **Seed injection deduplication**: A `StellarNode` may configure its validator seed via the legacy `spec.validatorConfig.seedSecretRef` (a plain Kubernetes Secret reference) or the newer `spec.validatorConfig.seedSecretSource` (KMS/ESO/CSI/Vault-backed). Both paths inject an environment variable named `STELLAR_CORE_SEED` into the pod spec. To prevent the API server from rejecting the pod due to duplicate environment variable names, the pod builder merges env vars **by name** using `merge_env_overrides` (see `src/controller/resources.rs`) instead of appending. The last writer wins, which gives `seedSecretSource` precedence over `seedSecretRef` — matching the precedence in `ValidatorConfig::resolve_seed_source()`. If both fields are set, only one `STELLAR_CORE_SEED` entry appears in the rendered pod spec, sourced from `seedSecretSource`.
+- **No hard rejection**: The operator does **not** reject a CR that sets both `seedSecretRef` and `seedSecretSource`; it silently deduplicates. This preserves backward compatibility with existing clusters that may have both fields populated during migration.
+- **Auditing other env vars**: The same `merge_env_overrides` mechanism is used for `stellarCoreEnv` (Validator), `horizonEnv` (Horizon), and any custom env vars injected via CSI/Vault. Contributors adding new env var injection paths **must** route them through `merge_env_overrides` (or `build_container` for the legacy `seedSecretRef` path) rather than using `Vec::extend` on the container's `env` list. A property-based test in `src/controller/seed_env_dedupe_test.rs` asserts uniqueness of all env var names across all three node types.
 
 ### Documentation conventions
 

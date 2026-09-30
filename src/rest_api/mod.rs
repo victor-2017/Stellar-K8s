@@ -64,6 +64,7 @@
 //! ```
 
 mod audit_handlers;
+mod alert_test;
 mod auth;
 mod compliance_handlers;
 pub mod custom_metrics;
@@ -78,15 +79,16 @@ pub mod metrics_store;
 mod oidc;
 mod profiling;
 mod resource_optimization_handlers;
-mod scp_topology;
 #[cfg(feature = "rest-api")]
 pub mod schema_validation;
+mod scp_topology;
 mod server;
 pub mod stellar_metrics_server;
 mod versioning;
 
 pub mod gateway;
 
+pub use alert_test::test_alert_expr;
 pub use auth::{check_rbac_permission, k8s_rbac_auth};
 pub use health_summary::{get_health_incidents, get_health_summary, get_node_health_status};
 pub use metrics_store::StellarMetricsStore;

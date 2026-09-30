@@ -58,6 +58,8 @@
 //! - [`byzantine`] - Byzantine fault detection and analysis
 //! - [`log_scrub`] - PII and sensitive data scrubbing for logs
 //! - [`version_check`] - Background version checking against GitHub
+//! - [`sla`] - Uptime SLA tracking and monthly reports
+//! - [`delegation`] - Delegated stake and reward ledger
 //!
 //! # Example: Creating a Validator Node
 //!
@@ -108,6 +110,7 @@ pub mod canary_deployment;
 pub mod canary_promotion_controller;
 pub mod capacity_planning;
 pub mod carbon_aware;
+
 pub mod cli;
 pub mod commands;
 pub mod compliance;
@@ -115,21 +118,22 @@ pub mod compliance_scan;
 pub mod composite_slo;
 pub mod config_mgmt;
 pub mod config_reload;
-pub mod data_residency;
 pub mod connection_drain;
 pub mod consensus_monitoring;
 pub mod controller;
 pub mod cost_optimization;
 pub mod crd;
 pub mod data_pipeline;
+pub mod data_residency;
 pub mod db_management;
+pub mod delegation;
 pub mod db_migrations;
-pub mod dependency_contract;
 pub mod degradation;
+pub mod dependency_contract;
 pub mod deployment_strategy;
 pub mod error;
+
 pub mod error_budget;
-pub mod rollback_engine;
 pub mod event_processing;
 pub mod fair_share_rate_limiter;
 pub mod fair_share_scheduler;
@@ -148,25 +152,31 @@ pub mod logging;
 pub mod message_queue;
 pub mod migration_safety;
 pub mod network_observability;
-pub mod observability_contract;
 pub mod node_boot_verification;
+pub mod observability_contract;
 pub mod plugin_sdk;
 pub mod policy_engine;
 pub mod policy_promotion;
 pub mod preflight;
+pub mod protocol_compatibility;
+#[path = "profiling/mod.rs"]
 pub mod profiling;
-pub mod provenance;
-pub mod replica_quotas;
-pub mod reproducible_build;
 pub mod progressive_config;
+pub mod provenance;
+// pub mod replica_quotas; // TODO: restore when module is implemented
+pub mod reproducible_build;
+pub mod rollback_engine;
 pub mod runbook;
 pub mod scheduler;
 pub mod schema_evolution;
 pub mod schema_registry;
 pub mod sdk;
+pub mod sla;
 pub mod secrets_broker;
 pub mod search;
+pub mod secrets_broker;
 pub mod security;
+#[path = "telemetry.rs"]
 pub mod telemetry;
 pub mod version_check;
 pub mod websocket_streaming;

@@ -227,6 +227,8 @@ async fn upload_to_s3(
 
 struct Batch {
     lines: Vec<String>,
+    // Recorded for age-based flush decisions; retained for that upcoming use.
+    #[allow(dead_code)]
     started_at: Instant,
 }
 
@@ -349,11 +351,12 @@ async fn tail_and_ship(
 ) -> Result<()> {
     info!(file = %log_file.display(), "Tailing log file");
 
-    let file = File::open(log_file)
-        .await
-        .map_err(|e| {
-            Error::internal_step("file io", format!("Cannot open {}: {e}", log_file.display()))
-        })?;
+    let file = File::open(log_file).await.map_err(|e| {
+        Error::internal_step(
+            "file io",
+            format!("Cannot open {}: {e}", log_file.display()),
+        )
+    })?;
 
     let mut reader = BufReader::new(file).lines();
     let mut batch = Batch::new();
